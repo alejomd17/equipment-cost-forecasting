@@ -348,6 +348,57 @@ def buscar_contexto_mercado(consulta: str) -> str:
     return "\n".join(lineas)
 
 
+@tool
+def evaluar_cotizacion(equipo: str, precio_ofertado: float, mes: int = 1) -> str:
+    """Compara el precio que ofrece un proveedor contra el rango proyectado
+
+    Permite juzgar una cotización de forma objetiva: si cae por debajo del
+    percentil 5 es una oportunidad frente a lo que anticipa el mercado, si cae
+    dentro del rango es un precio normal, y si supera el percentil 95 está por
+    encima de lo esperado. Sirve también para comparar varias cotizaciones entre
+    sí usando la misma referencia
+
+    Úsala cuando mencionen un precio de proveedor, una cotización recibida, o
+    pregunten si un precio es razonable
+
+    Args:
+        equipo: "1" o "2"
+        precio_ofertado: precio por unidad que ofrece el proveedor
+        mes: mes del horizonte al que aplica la cotización (1, 2 o 3)
+    """
+    if equipo not in EQUIPOS:
+        return "Equipo desconocido. Opciones: 1, 2"
+
+    df, h = _leer_pronostico(6)
+    if df is None:
+        return "No hay pronóstico generado. Ejecutar 'make forecast' primero"
+
+    fila = df[(df["serie"] == EQUIPOS[equipo]) & (df["h"] == int(mes))]
+    if fila.empty:
+        return f"El mes {mes} está fuera del horizonte disponible ({h} meses)"
+
+    r = fila.iloc[0]
+    p5, p50, p95 = float(r["p5"]), float(r["p50"]), float(r["p95"])
+    desviacion = (precio_ofertado - p50) / p50
+
+    if precio_ofertado < p5:
+        veredicto = "Por debajo del rango proyectado: oportunidad frente a lo que anticipa el mercado"
+    elif precio_ofertado > p95:
+        veredicto = "Por encima del rango proyectado: precio alto frente a lo que anticipa el mercado"
+    else:
+        veredicto = "Dentro del rango proyectado: precio consistente con el mercado esperado"
+
+    return "\n".join([
+        f"Evaluación de la cotización para {EQUIPOS[equipo]} en {r['fecha']}:",
+        f"  Precio ofertado: {precio_ofertado:,.0f}",
+        f"  Rango proyectado al 90%: [{p5:,.0f}, {p95:,.0f}] con mediana {p50:,.0f}",
+        f"  Desviación frente a la mediana: {desviacion:+.1%}",
+        f"\n{veredicto}",
+        "\nEl rango proviene del pronóstico interno y no incluye condiciones comerciales "
+        "como plazos de entrega, garantías o volumen, que deben pesar en la decisión final",
+    ])
+
+
 TOOLS = [
     consultar_pronostico,
     resumen_analisis,
@@ -357,4 +408,5 @@ TOOLS = [
     presupuesto_proyecto,
     estado_pipeline,
     buscar_contexto_mercado,
+    evaluar_cotizacion,
 ]

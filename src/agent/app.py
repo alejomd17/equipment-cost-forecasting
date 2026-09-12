@@ -8,8 +8,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from src.agent.graph import construir_agente, preguntar
 import streamlit as st
+from src.agent.graph import construir_agente, preguntar
 
 HILO = "streamlit"
 
@@ -17,6 +17,7 @@ EJEMPLOS = [
     "¿Cuánto va a costar el Equipo 1 en los próximos tres meses?",
     "¿Por qué el Equipo 2 tiene menos incertidumbre?",
     "¿Qué pasa si el precio de Y sube 15%?",
+    "Un proveedor me cotiza el Equipo 1 a 505 para septiembre, ¿es razonable?",
     "Necesito comprar 2 unidades del Equipo 1 en septiembre y 1 del Equipo 2 en noviembre, ¿cuánto presupuesto?",
     "¿Cómo viene el mercado de commodities de construcción este año?",
 ]
