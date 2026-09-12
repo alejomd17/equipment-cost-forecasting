@@ -1,0 +1,161 @@
+{
+  "generado": "2026-09-11",
+  "cortes": [
+    "2019-08-31",
+    "2020-08-31",
+    "2021-08-31",
+    "2022-08-31"
+  ],
+  "horizontes": [
+    3,
+    6,
+    12
+  ],
+  "h_seleccion": 3,
+  "criterio": "lidera 2 de 3 métricas y mejora al menos 5% el MASE de naive",
+  "mejora_minima": 0.05,
+  "ganadores": {
+    "X": "lightgbm",
+    "Y": "arima",
+    "Z": "sarima"
+  },
+  "metricas_h_seleccion": {
+    "X|lightgbm": {
+      "MAPE": 0.0595,
+      "RMSE": 4.9412,
+      "MASE": 0.9642
+    },
+    "X|naive": {
+      "MAPE": 0.0686,
+      "RMSE": 5.3425,
+      "MASE": 1.1666
+    },
+    "X|ets": {
+      "MAPE": 0.0679,
+      "RMSE": 5.4063,
+      "MASE": 1.176
+    },
+    "X|drift": {
+      "MAPE": 0.0679,
+      "RMSE": 5.4063,
+      "MASE": 1.176
+    },
+    "X|arima": {
+      "MAPE": 0.0836,
+      "RMSE": 6.093,
+      "MASE": 1.3713
+    },
+    "X|sarima": {
+      "MAPE": 0.0895,
+      "RMSE": 6.6442,
+      "MASE": 1.4771
+    },
+    "X|prophet": {
+      "MAPE": 0.2381,
+      "RMSE": 18.513,
+      "MASE": 4.2675
+    },
+    "Y|arima": {
+      "MAPE": 0.0572,
+      "RMSE": 41.303,
+      "MASE": 1.4948
+    },
+    "Y|sarima": {
+      "MAPE": 0.062,
+      "RMSE": 43.4683,
+      "MASE": 1.5918
+    },
+    "Y|naive": {
+      "MAPE": 0.0635,
+      "RMSE": 45.4677,
+      "MASE": 1.6506
+    },
+    "Y|drift": {
+      "MAPE": 0.0646,
+      "RMSE": 46.7186,
+      "MASE": 1.6909
+    },
+    "Y|lightgbm": {
+      "MAPE": 0.0557,
+      "RMSE": 42.8618,
+      "MASE": 1.7817
+    },
+    "Y|ets": {
+      "MAPE": 0.0771,
+      "RMSE": 57.5172,
+      "MASE": 2.1611
+    },
+    "Y|prophet": {
+      "MAPE": 0.2304,
+      "RMSE": 147.2187,
+      "MASE": 6.3868
+    },
+    "Z|sarima": {
+      "MAPE": 0.0448,
+      "RMSE": 123.2712,
+      "MASE": 1.563
+    },
+    "Z|naive": {
+      "MAPE": 0.0497,
+      "RMSE": 136.2566,
+      "MASE": 1.691
+    },
+    "Z|ets": {
+      "MAPE": 0.0509,
+      "RMSE": 139.1183,
+      "MASE": 1.7195
+    },
+    "Z|drift": {
+      "MAPE": 0.0509,
+      "RMSE": 139.1184,
+      "MASE": 1.7195
+    },
+    "Z|arima": {
+      "MAPE": 0.0517,
+      "RMSE": 140.421,
+      "MASE": 1.73
+    },
+    "Z|lightgbm": {
+      "MAPE": 0.0698,
+      "RMSE": 188.1067,
+      "MASE": 2.4964
+    },
+    "Z|prophet": {
+      "MAPE": 0.1741,
+      "RMSE": 414.9907,
+      "MASE": 5.9635
+    }
+  },
+  "formulas_equipos": {
+    "Equipo1": {
+      "asumido": {
+        "Price_X": 0.2,
+        "Price_Y": 0.8,
+        "Price_Z": 0.0
+      },
+      "estimado": {
+        "Price_X": 0.1983,
+        "Price_Y": 0.8006,
+        "Price_Z": -0.0001
+      },
+      "desvio_max": 0.0017,
+      "mape_formula": 0.00304,
+      "compatible": true
+    },
+    "Equipo2": {
+      "asumido": {
+        "Price_X": 0.3333,
+        "Price_Y": 0.3333,
+        "Price_Z": 0.3333
+      },
+      "estimado": {
+        "Price_X": 0.3353,
+        "Price_Y": 0.3353,
+        "Price_Z": 0.3322
+      },
+      "desvio_max": 0.002,
+      "mape_formula": 0.00245,
+      "compatible": true
+    }
+  }
+}
