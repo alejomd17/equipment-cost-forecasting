@@ -90,7 +90,8 @@ composiciones para obtener el costo de cada equipo.
 
 **`src/agent/`** expone los artefactos como herramientas de un agente ReAct sobre
 LangGraph. El agente consulta el pronóstico, explica cómo se construyó, simula
-escenarios de shock en los insumos, calcula presupuestos y busca contexto de
+escenarios de shock en los insumos, calcula presupuestos de compra, evalúa
+cotizaciones de proveedores contra el rango proyectado y busca contexto de
 mercado en la web.
 
 ## Estructura
