@@ -1,8 +1,7 @@
-"""Modelos candidatos para pronosticar las series de materias primas.
+"""Modelos candidatos para pronosticar las series de materias primas
 
-Cada función recibe la serie de entrenamiento y el horizonte, y devuelve un
-array con las predicciones. El diccionario MODELOS los expone por nombre para
-que el backtest y el pronóstico final los recorran sin repetir código.
+Cada función recibe la serie de entrenamiento y el horizonte, y devuelve un array con las predicciones.
+El diccionario MODELOS los expone por nombre para que el backtest y el pronóstico final los recorran sin repetir código.
 """
 
 import logging
