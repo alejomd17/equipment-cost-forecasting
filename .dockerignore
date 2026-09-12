@@ -1,0 +1,12 @@
+.venv
+.git
+.gitignore
+.env
+.agents
+.claude
+__pycache__
+*.pyc
+.ipynb_checkpoints
+notebooks
+docs
+reports/figures
