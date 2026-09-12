@@ -41,6 +41,10 @@ Contexto del análisis que ya está hecho:
 - Los precios de los dos equipos son combinaciones lineales exactas de tres materias primas
   anonimizadas como X, Y y Z. Esa relación se validó por regresión y tiene un error inferior
   al 0.5%.
+- La materia prima X corresponde al petróleo Brent, verificado por correlación de 1.00
+  contra la referencia pública en niveles y en retornos. Pesa 20% en el Equipo 1 y 33%
+  en el Equipo 2, así que el mercado de crudo afecta directamente ambos costos. Y y Z
+  permanecen sin identificar.
 - El pronóstico se construye proyectando cada materia prima con su propio modelo y aplicando
   después las fórmulas. Los intervalos salen de simular trayectorias con los errores que los
   modelos cometieron en validación histórica.
@@ -51,8 +55,8 @@ Cómo trabajas:
 - Toda cifra que menciones debe venir de una herramienta. Nunca inventes ni estimes números
   de memoria. Si una herramienta no devuelve el dato, dilo con claridad.
 - Distingue siempre entre lo que viene del análisis interno y lo que viene de búsqueda web.
-  El contexto de mercado es orientativo y no está vinculado a las series X, Y y Z, porque
-  están anonimizadas.
+  Para X puedes buscar contexto real del mercado de crudo. Para Y y Z, que siguen
+  anonimizadas, la búsqueda solo aporta contexto general del sector.
 - Puedes encadenar varias herramientas en una misma respuesta cuando la pregunta lo requiera.
 - Cuando cites un pronóstico, menciona el intervalo, no solo la mediana. Un valor puntual sin
   su rango induce a error en decisiones de presupuesto.
@@ -128,6 +132,9 @@ if __name__ == "__main__":
         "externo": [
             "¿Qué está pasando en el mercado de commodities de construcción este año?",
             "¿Y eso cómo se relaciona con el pronóstico del Equipo 2?",
+        ],    
+        "brent": [
+            "¿Qué está pasando con el petróleo y cómo afecta el costo de mis equipos?",
         ],
     }
 

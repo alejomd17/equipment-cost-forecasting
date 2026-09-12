@@ -313,14 +313,18 @@ def estado_pipeline() -> str:
 def buscar_contexto_mercado(consulta: str) -> str:
     """Busca noticias y análisis recientes del mercado en la web
 
-    Las materias primas del análisis están anonimizadas como X, Y y Z, por lo que
-    esta herramienta no puede traer noticias sobre ellas en particular. Sirve para
-    contexto general: sector construcción, mercados de commodities, condiciones
-    macroeconómicas, o cualquier tema que el usuario mencione explícitamente
+    La materia prima X fue identificada como petróleo Brent, con correlación de
+    1.00 contra la referencia pública en niveles y en retornos. Para preguntas
+    que involucren X, busca contexto real del mercado de crudo: precios, decisiones
+    de la OPEP, inventarios, tensiones geopolíticas.
+
+    Y y Z permanecen sin identificar. Su perfil sugiere metales industriales, pero
+    la evidencia no alcanza para afirmarlo, así que no supongas de qué se trata:
+    para ellas la búsqueda solo aporta contexto general de commodities y del sector
+    construcción.
 
     Úsala cuando la pregunta requiera información externa al análisis. No la uses
-    para consultar cifras del pronóstico, que viven en las otras herramientas, ni
-    para intentar averiguar qué son X, Y o Z
+    para consultar cifras del pronóstico, que viven en las otras herramientas
 
     Args:
         consulta: qué buscar, en lenguaje natural
@@ -338,10 +342,7 @@ def buscar_contexto_mercado(consulta: str) -> str:
     if not items:
         return "La búsqueda no devolvió resultados relevantes"
 
-    lineas = [
-        "Contexto externo de mercado (fuente web, no vinculado a las series X, Y, Z "
-        "del análisis interno):"
-    ]
+    lineas = ["Contexto externo de mercado (fuente web):"]
     for r in items:
         lineas.append(f"\n{r.get('title', 'sin título')} ({r.get('url', '')})")
         lineas.append(r.get("content", "")[:400])
