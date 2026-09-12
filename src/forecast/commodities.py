@@ -20,7 +20,7 @@ except (ImportError, OSError):
     LGBM_DISPONIBLE = False
 logging.getLogger("cmdstanpy").setLevel(logging.WARNING)
 logging.getLogger("prophet").setLevel(logging.WARNING)
-
+logging.getLogger("cmdstanpy").disabled = True
 LAGS = (1, 2, 3, 6, 12)
 
 

@@ -17,7 +17,14 @@ ROOT = Path(__file__).resolve().parents[2]
 FORECASTS = ROOT / "data" / "forecasts"
 
 # Modelo ganador por serie según el backtest multi-ventana (ver 03_forecast)
-GANADORES = {"X": "lightgbm", "Y": "naive", "Z": "sarima"}
+import json
+
+SELECCION_PATH = ROOT / "models" / "seleccion.json"
+if not SELECCION_PATH.exists():
+    raise FileNotFoundError("Falta models/seleccion.json. Corré 'make train' primero")
+SELECCION = json.loads(SELECCION_PATH.read_text())
+
+GANADORES = json.loads(SELECCION_PATH.read_text())["ganadores"]
 
 # Fórmulas validadas en 02_modeling
 FORMULAS = {
@@ -134,11 +141,10 @@ def main() -> None:
     fin = min(s.index.max() for s in series.values())
     series = {k: s[(s.index >= inicio) & (s.index <= fin)] for k, s in series.items()}
 
-    cortes = pd.to_datetime(["2019-08-31", "2020-08-31", "2021-08-31", "2022-08-31"])
-
+    CORTES = pd.to_datetime(SELECCION["cortes"])
     FORECASTS.mkdir(parents=True, exist_ok=True)
     for h, etiqueta in [(H_BASE, "base"), (H_EXT, "extendido")]:
-        out = proyectar(series, cortes, h)
+        out = proyectar(series, CORTES , h)
         out.to_csv(FORECASTS / f"pronostico_{etiqueta}_{h}m.csv", index=False)
         print(f"\nHorizonte {h} meses ({etiqueta}):")
         print(out[out.serie.str.startswith("Equipo")].to_string(index=False))

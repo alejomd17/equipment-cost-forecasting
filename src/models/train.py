@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MODELS = ROOT / "models"
 REPORTS = ROOT / "reports"
 
-CORTES = ["2019-08-31", "2020-08-31", "2021-08-31", "2022-08-31"]
+CORTES = [f"{a}-08-31" for a in range(2014, 2023)]
 HORIZONTES = (3, 6, 12)
 H_SELECCION = 3
 
@@ -127,6 +127,6 @@ def main() -> None:
     for equipo, v in formulas.items():
         estado = "compatible" if v["compatible"] else "REVISAR"
         print(f"  {equipo}: {estado}  desvío máx {v['desvio_max']}  MAPE {v['mape_formula']:.5f}")
-        
+
 if __name__ == "__main__":
     main()
