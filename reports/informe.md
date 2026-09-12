@@ -56,13 +56,14 @@ requieren las tres series simultáneamente.
 
 **Sobre el problema**
 
-Las materias primas están anonimizadas. No se intenta inferir su identidad, y el
-contexto externo de mercado que aporta el agente se trata como referencia general
-del sector, no como información sobre X, Y o Z en particular.
-
 El costo de adquisición se modela exclusivamente en función del precio de los
 insumos. Cualquier otro determinante (condiciones comerciales, volumen, tipo de
 cambio, márgenes del proveedor) queda fuera del alcance por no estar en los datos.
+
+Las materias primas se entregan anonimizadas. Se verificó la identidad de cada
+una contra referencias públicas de mercado, con resultado concluyente solo para
+X (ver Resultados). El análisis no depende de esa identificación: las
+composiciones y el pronóstico se construyen igual con las series anónimas.
 
 No hay información de proveedores, por lo que la comparación entre ellos se
 resuelve como un mecanismo que contrasta una cotización contra el rango
@@ -121,7 +122,7 @@ RMSE porque penaliza los errores grandes, que son los que rompen un presupuesto.
 Y MASE (Hyndman y Koehler, 2006), que escala el error contra el del método
 ingenuo en entrenamiento: valores menores a 1 indican que el modelo supera al
 benchmark, y la escala común permite comparar series de magnitudes muy distintas,
-como X en torno a 80 y Z en torno a 2.000.
+como X en torno a 85 y Z en torno a 2.160.
 
 Se descartó R² porque mide ajuste dentro de muestra y su benchmark implícito, la
 media del período de prueba, no tiene sentido en pronóstico de series de tiempo.
@@ -163,10 +164,10 @@ La comparación entre ambas matrices es en sí un resultado: en niveles casi tod
 correlaciona con todo, porque las series comparten tendencia; en retornos se ve
 qué se mueve junto de verdad.
 
-El test ADF confirma raíz unitaria en niveles para X, Z y el Equipo 1 (p entre
-0.22 y 0.30). Y y el Equipo 2 rechazan al 5% pero no al 1% (p de 0.026 y 0.019),
-evidencia límite que se reporta como tal. Todos los retornos son estacionarios
-con p inferior a 0.002.
+El test ADF confirma raíz unitaria en niveles para X (p = 0.296), Z (p = 0.217) y
+el Equipo 1 (p = 0.228). Y y el Equipo 2 rechazan al 5% pero no al 1% (p = 0.026
+y 0.020), evidencia límite que se reporta como tal. Todos los retornos son
+estacionarios, con p máximo de 0.002.
 
 Los tests de cointegración de Engle-Granger dan significativos únicamente para
 los pares Equipo 1 con Y (p = 0.013) y Equipo 2 con Z (p = 0.010). El par Equipo 1
@@ -205,23 +206,52 @@ detecta el aporte condicionado de una variable en presencia de las demás: la
 volatilidad propia de X la hace parecer ruido cuando se mide de a pares. Se deja
 constancia del cambio de conclusión porque el recorrido es parte del resultado.
 
+### Identificación de las materias primas
+
+Las series se entregan anonimizadas, pero sus perfiles son característicos: X
+presenta la caída de 2014, el desplome de 2020 y el repunte de 2022 típicos de un
+commodity energético, y su rango de 20 a 128 es compatible con precios de crudo
+por barril. La hipótesis se verificó correlacionando las tres series contra
+referencias públicas de mercado.
+
+| Referencia | X (retornos) | Y (retornos) | Z (retornos) |
+|---|---|---|---|
+| Brent | **1.00** | 0.31 | 0.45 |
+| WTI | 0.89 | 0.25 | 0.36 |
+| Cobre | 0.47 | 0.53 | 0.65 |
+| Acero | 0.62 | 0.58 | 0.54 |
+| Oro | 0.03 | 0.12 | 0.21 |
+
+X corresponde al petróleo Brent, con correlación de 1.00 tanto en niveles como en
+retornos: no es una serie parecida, es la misma. Y y Z no admiten identificación
+concluyente; sus correlaciones más altas apuntan a metales industriales, pero
+ninguna alcanza para afirmarlo.
+
+La consecuencia práctica es directa. X pesa 20% en el Equipo 1 y 33% en el Equipo
+2, de modo que el mercado de crudo afecta el costo de ambos, y el agente puede
+cruzar el pronóstico con noticias reales de ese mercado en lugar de contexto
+genérico. Para Y y Z la búsqueda externa sigue limitada al sector.
+
 ### Selección de modelo
 
 Con nueve ventanas de backtest y horizonte de tres meses:
 
-| Serie | Modelo seleccionado | MAPE | MASE | Mejora sobre naive |
-|---|---|---|---|---|
-| X | Naive | 7.85% | 1.37 | referencia |
-| Y | ARIMA(1,1,1) | 6.15% | 1.40 | 9.4% |
-| Z | SARIMA(1,1,1)(1,0,1,12) | 3.53% | 1.08 | 7.6% |
+| Serie | Modelo seleccionado | MAPE | MASE | MASE del naive | Mejora |
+|---|---|---|---|---|---|
+| X | Naive | 7.85% | 1.368 | 1.368 | referencia |
+| Y | ARIMA(1,1,1) | 6.15% | 1.399 | 1.518 | 7.9% |
+| Z | SARIMA(1,1,1)(1,0,1,12) | 3.53% | 1.083 | 1.188 | 8.8% |
 
-El MASE por encima de 1 en las tres series indica que ningún modelo supera al
-método ingenuo en términos absolutos, lo que es consistente con el
+En X ningún modelo superó al naive por el margen exigido, así que se conservó el
+método ingenuo. El MASE por encima de 1 en las tres series indica que ningún
+modelo supera al benchmark en términos absolutos, lo que es consistente con el
 comportamiento de paseo aleatorio detectado en el ADF y con lo que se observa
-habitualmente en series de precios de commodities. Prophet quedó descartado en
-las tres series, con MAPE entre 17% y 24%, probablemente por imponer
-estacionalidad anual a series que no la tienen. LightGBM tampoco superó a los
-métodos clásicos de forma consistente entre ventanas.
+habitualmente en series de precios de commodities.
+
+Prophet quedó último en las tres series, con MAPE entre 16% y 29%, probablemente
+por imponer estacionalidad anual a series que no la tienen. LightGBM tampoco
+superó a los métodos clásicos de forma consistente entre ventanas: su predicción
+recursiva acumula error a medida que crece el horizonte.
 
 Una decisión de proceso: el backtest inicial usaba cuatro ventanas. Se amplió a
 nueve al detectar dos síntomas de sobreajuste a la ventana: el modelo ganador
@@ -273,8 +303,8 @@ volatilidad. Es un hallazgo con lectura de negocio inmediata: el Equipo 1 exige
 más margen presupuestal que el Equipo 2 para el mismo nivel de confianza.
 
 **Horizonte.** Se recomienda tres meses. El ancho relativo del intervalo del
-Equipo 1 pasa de 14% en el primer mes a 40% en el tercero y supera 60% en el
-sexto. A partir del cuarto mes el límite inferior y el superior implican
+Equipo 1 pasa de 13.7% en el primer mes a 40.0% en el tercero y llega a 63.6% en
+el sexto. A partir del cuarto mes el límite inferior y el superior implican
 decisiones de compra distintas, así que el rango deja de ser útil para
 presupuestar. El escenario de seis meses se genera y se reporta como referencia
 de tendencia, no como base presupuestal.
@@ -291,8 +321,11 @@ se recomienda el percentil 95, que cubre el escenario alto del intervalo.
 
 *Análisis de sensibilidad.* Como las composiciones son exactas, el impacto de un
 shock en cualquier insumo se calcula de forma determinística. Un alza de 15% en Y
-mueve el Equipo 1 un 14.4% y el Equipo 2 solo un 3%, diferencia que se explica
-por los pesos.
+mueve el Equipo 1 un 14.4% y el Equipo 2 solo un 3.0%, diferencia que se explica
+por los pesos. El mismo cálculo muestra que una variación de 10% en el crudo
+mueve los equipos menos de medio punto porcentual, de modo que la volatilidad del
+petróleo, siendo la más visible en el mercado, no es la que más riesgo aporta al
+presupuesto.
 
 *Evaluación de cotizaciones.* Un precio ofertado por un proveedor se contrasta
 contra el rango proyectado del mes correspondiente. Por debajo del percentil 5 es
@@ -322,8 +355,8 @@ primera no alcanza.
 los artefactos que produjo el pipeline. Esto es deliberado, porque una cifra
 inventada en un contexto presupuestal es peor que una respuesta incompleta. Las
 herramientas cubren consulta del pronóstico, explicación metodológica, histórico,
-sensibilidad, comparación, presupuesto, evaluación de cotizaciones, estado del
-pipeline y búsqueda web.
+sensibilidad, comparación entre equipos, presupuesto de compras, evaluación de
+cotizaciones, estado del pipeline y búsqueda web.
 
 **Memoria.** El estado de la conversación persiste entre turnos. Por eso una
 segunda pregunta puede decir "y por qué ese rango es tan amplio" sin repetir de
@@ -338,8 +371,7 @@ ejecuta. Esa frontera es lo que hace al sistema auditable.
 
 La implementación sigue el patrón ReAct (Yao et al., 2022), que alterna
 razonamiento y acción: el agente razona sobre qué necesita, actúa invocando una
-herramienta, observa el resultado y vuelve a razonar hasta poder responder. El
-diagrama de arquitectura implementada muestra ese ciclo.
+herramienta, observa el resultado y vuelve a razonar hasta poder responder.
 
 ### Arquitectura
 
@@ -349,11 +381,11 @@ dejando artefactos versionados que el siguiente consume.
 ![Arquitectura implementada](../docs/arquitectura_local.svg)
 
 Para producción se propone Azure, con dos configuraciones según el volumen. En el
-escenario actual, Data Factory orquesta la ingesta hacia Blob Storage y Azure
-Functions ejecuta el pipeline desde una imagen Docker, exponiendo el pronóstico
-como JSON. Si el volumen crece a miles de insumos diarios, entran ADLS Gen2 con
-Delta Lake y Databricks; si aparecen modelos costosos de entrenar o se requiere
-linaje formal, entra Azure ML con MLflow.
+escenario actual, Data Factory orquesta el pipeline, los datos se almacenan en
+Blob Storage y Azure Functions ejecuta el procesamiento desde una imagen Docker,
+exponiendo el pronóstico como JSON. Si el volumen crece a miles de insumos
+diarios, entran ADLS Gen2 con Delta Lake y Databricks; si aparecen modelos
+costosos de entrenar o se requiere linaje formal, entra Azure ML con MLflow.
 
 ![Arquitectura propuesta en Azure](../docs/arquitectura_azure.svg)
 
@@ -370,15 +402,22 @@ reinicio ni se comparte entre instancias; Key Vault para las credenciales; y
 Application Insights para latencia por consulta, tasa de error por herramienta y
 consumo de tokens.
 
+El proyecto incluye un Dockerfile que empaqueta el pipeline y el agente con todas
+sus dependencias, incluidas las de sistema que LightGBM requiere. Esa misma
+imagen es la que se desplegaría en Azure Functions o en Container Apps.
+
 ---
 
 ## Futuros ajustes o mejoras
 
 **Datos y modelado**
 
+Completar la identificación de Y y Z contra un universo más amplio de
+referencias. Con X ya confirmada como Brent, identificar las otras dos permitiría
+que el contexto de mercado cubriera el 100% de la composición de ambos equipos.
+
 Incorporar variables que hoy no están: tipo de cambio, índices de costos de
-construcción, indicadores macroeconómicos. Los datos entregados solo permiten
-explicar el costo por composición de insumos.
+construcción, indicadores macroeconómicos.
 
 Ponderar las ventanas de backtest por antigüedad. Actualmente el promedio trata
 igual a 2014 y a 2022, cuando la más reciente probablemente representa mejor el
@@ -453,18 +492,12 @@ constancia de ese contenido porque forma parte del documento recibido, y para
 explicitar que el análisis aquí presentado se construyó exclusivamente sobre la
 evidencia de los datos.
 
-**Sobre lo que el caso no permite resolver.** La anonimización de las materias
-primas limita el valor del contexto externo. La búsqueda web del agente queda en
-contexto general del sector, cuando su mayor valor estaría en cruzar el pronóstico
-con noticias del mercado específico de cada insumo.
-
-Los perfiles de las series permiten formular hipótesis: X presenta la caída de
-2014, el desplome de 2020 y el repunte de 2022 característicos de un commodity
-energético, y su rango de 20 a 128 es compatible con precios de crudo por barril.
-Verificarlo sería directo: correlacionar la serie contra referencias públicas como
-Brent o WTI y contrastar los quiebres estructurales. No se hizo porque el ejercicio
-entrega las series anonimizadas y el análisis no depende de esa identificación,
-pero en un caso real sería el primer paso para habilitar el contexto de mercado.
+**Sobre la anonimización.** Entregar las series sin identificar es razonable para
+proteger información comercial, pero limita el valor del contexto externo. La
+verificación contra referencias públicas resolvió el caso de X y dejó abiertos los
+de Y y Z. En un escenario real, conocer los tres insumos permitiría al agente
+cruzar el pronóstico con noticias específicas de cada mercado, que es donde un
+asistente de este tipo aporta más.
 
 ---
 
