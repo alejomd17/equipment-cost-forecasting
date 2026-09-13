@@ -327,6 +327,19 @@ una oportunidad, dentro del rango es consistente con el mercado, por encima del
 percentil 95 está caro. Esto materializa el tercer beneficio esperado del caso:
 el proveedor lo aporta el usuario y el criterio lo aporta el sistema.
 
+### El agente en uso
+
+![Análisis de sensibilidad sobre las composiciones](figures/agente_sensibilidad.png)
+
+Ante un shock hipotético en un insumo, el agente calcula el impacto sobre cada
+equipo aplicando las composiciones. La diferencia entre 14.4% y 3.0% no es una
+estimación del modelo, es aritmética sobre los pesos.
+
+![Evaluación de una cotización contra el rango proyectado](figures/agente_cotizacion.png)
+
+Ante un precio ofertado, el agente lo contrasta con el intervalo del mes
+correspondiente y traduce el resultado en argumentos de negociación.
+
 ### Sistema de IA convencional frente a agente de IA
 
 El caso pide distinguir ambos conceptos, y la diferencia se puede ilustrar con lo
