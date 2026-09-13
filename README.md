@@ -62,12 +62,14 @@ make agent
 uv run streamlit run src/agent/app.py
 ```
 
-Con Docker, sin instalar nada más:
+Con Docker, sin instalar Python ni dependencias:
 
 ```bash
 make docker-build
 make docker-run
 ```
+
+El contenedor lee las claves del `.env`, así que hay que crearlo igual antes de correr.
 
 ## Qué hace cada etapa
 
@@ -93,6 +95,8 @@ LangGraph. El agente consulta el pronóstico, explica cómo se construyó, simul
 escenarios de shock en los insumos, calcula presupuestos de compra, evalúa
 cotizaciones de proveedores contra el rango proyectado y busca contexto de
 mercado en la web.
+
+![El agente evaluando una cotización de proveedor](reports/figures/agente_cotizacion.png)
 
 ## Estructura
 
@@ -124,4 +128,4 @@ corre en `make all` es el mismo código que produjo las figuras.
 El análisis completo está en [`reports/informe.md`](reports/informe.md), también en
 [PDF](reports/Informe_pronostico_costos_equipos.pdf). La
 [presentación](reports/Presentacion_pronostico_costos_equipos.pptx) resume los
-hallazgos en doce diapositivas.
+hallazgos en diapositivas.
