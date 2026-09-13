@@ -1,9 +1,7 @@
-# Informe
+# Gestión de costos operativos en un proyecto de construcción
 
-**Gestión de costos operativos en un proyecto de construcción**
-Alejandro Moscoso Deossa · Septiembre de 2026
+**Informe técnico**  ·  Alejandro Moscoso Deossa  ·  Septiembre de 2026
 
----
 
 ## Explicación del caso
 
@@ -29,7 +27,6 @@ mecanismo reproducible para anticipar costos antes de cada fase, menos
 desviación presupuestal frente a la volatilidad de insumos, y una base para
 evaluar proveedores de forma objetiva. La solución entregada responde a los tres.
 
----
 
 ## Supuestos
 
@@ -49,7 +46,7 @@ Los archivos crudos tienen formatos distintos que se documentan y corrigen en la
 ingesta: X viene en orden descendente y con historia desde 1988, Y usa punto y
 coma como separador, coma decimal, fecha en formato día/mes/año y marca BOM al
 inicio, y Z trae las columnas invertidas. Ninguna de esas particularidades altera
-los valores; todas afectan la lectura.
+los valores. Todas afectan la lectura.
 
 El análisis parte de enero de 2010 porque es cuando arranca Z, y los dos equipos
 requieren las tres series simultáneamente.
@@ -69,7 +66,6 @@ No hay información de proveedores, por lo que la comparación entre ellos se
 resuelve como un mecanismo que contrasta una cotización contra el rango
 proyectado, no como un ranking construido a partir de datos históricos.
 
----
 
 ## Formas para resolver el caso y la opción tomada en esta prueba
 
@@ -143,7 +139,6 @@ intervalos, y usar métodos distintos por serie haría incomparables los
 resultados. El bootstrap aplica el mismo procedimiento a todos, sin supuestos
 sobre la distribución del error.
 
----
 
 ## Resultados del análisis de los datos y los modelos
 
@@ -161,7 +156,7 @@ compartida antes que relación directa.
 ![Matrices de correlación](figures/correlaciones.png)
 
 La comparación entre ambas matrices es en sí un resultado: en niveles casi todo
-correlaciona con todo, porque las series comparten tendencia; en retornos se ve
+correlaciona con todo, porque las series comparten tendencia. En retornos se ve
 qué se mueve junto de verdad.
 
 El test ADF confirma raíz unitaria en niveles para X (p = 0.296), Z (p = 0.217) y
@@ -224,7 +219,7 @@ referencias públicas de mercado.
 
 X corresponde al petróleo Brent, con correlación de 1.00 tanto en niveles como en
 retornos: no es una serie parecida, es la misma. Y y Z no admiten identificación
-concluyente; sus correlaciones más altas apuntan a metales industriales, pero
+concluyente. Sus correlaciones más altas apuntan a metales industriales, pero
 ninguna alcanza para afirmarlo.
 
 La consecuencia práctica es directa. X pesa 20% en el Equipo 1 y 33% en el Equipo
@@ -273,7 +268,6 @@ El error de X sobre ocho meses no vistos es menor que el obtenido en el backtest
 a tres meses, lo que respalda la metodología. Z no admite esta validación porque
 su última observación coincide con el fin del período común.
 
----
 
 ## Proyección de costos y horizonte de predicción
 
@@ -311,7 +305,7 @@ de tendencia, no como base presupuestal.
 
 ### Del pronóstico a la decisión
 
-El pronóstico por sí solo no reduce desviaciones presupuestales; lo que las
+El pronóstico por sí solo no reduce desviaciones presupuestales. Lo que las
 reduce es usarlo. Por eso el agente incorpora tres funciones orientadas a
 decisión:
 
@@ -338,10 +332,15 @@ el proveedor lo aporta el usuario y el criterio lo aporta el sistema.
 El caso pide distinguir ambos conceptos, y la diferencia se puede ilustrar con lo
 construido aquí.
 
-El modelo de pronóstico es un **sistema de IA convencional**: recibe una serie de
-precios, produce una proyección, y termina. Es una función de datos a resultado.
-No decide cuándo ejecutarse, no elige qué información necesita, no recuerda
-ejecuciones anteriores ni actúa sobre nada.
+El modelo de pronóstico corresponde a lo que el caso llama un **sistema
+convencional**: recibe una serie de precios, produce una proyección, y termina. Es
+una función de datos a resultado. No decide cuándo ejecutarse, no elige qué
+información necesita, no recuerda ejecuciones anteriores ni actúa sobre nada.
+
+Vale una precisión sobre la etiqueta. Un ARIMA es econometría clásica, no
+inteligencia artificial, y lo mismo aplicaría si en su lugar hubiera una red
+neuronal de gran escala: seguiría siendo una función de datos a resultado. Lo que
+define la categoría no es la técnica empleada sino el comportamiento del sistema.
 
 El asistente es un **agente**, y se distingue en cuatro dimensiones:
 
@@ -384,7 +383,7 @@ Para producción se propone Azure, con dos configuraciones según el volumen. En
 escenario actual, Data Factory orquesta el pipeline, los datos se almacenan en
 Blob Storage y Azure Functions ejecuta el procesamiento desde una imagen Docker,
 exponiendo el pronóstico como JSON. Si el volumen crece a miles de insumos
-diarios, entran ADLS Gen2 con Delta Lake y Databricks; si aparecen modelos
+diarios, entran ADLS Gen2 con Delta Lake y Databricks. Si aparecen modelos
 costosos de entrenar o se requiere linaje formal, entra Azure ML con MLflow.
 
 ![Arquitectura propuesta en Azure](../docs/arquitectura_azure.svg)
@@ -396,17 +395,16 @@ FastAPI, que el equipo del portal consume desde su propia interfaz. En ambos
 casos el backend es el mismo, lo que permite atender otros canales sin
 reescribir nada.
 
-Tres componentes de plataforma sostienen la solución: Postgres como checkpointer
-persistente del agente, en reemplazo del estado en memoria que no sobrevive a un
-reinicio ni se comparte entre instancias; Key Vault para las credenciales; y
-Application Insights para latencia por consulta, tasa de error por herramienta y
-consumo de tokens.
+Tres componentes de plataforma sostienen la solución. Postgres actúa como
+checkpointer persistente del agente, en reemplazo del estado en memoria que no
+sobrevive a un reinicio ni se comparte entre instancias. Key Vault guarda las
+credenciales. Application Insights registra latencia por consulta, tasa de error
+por herramienta y consumo de tokens.
 
 El proyecto incluye un Dockerfile que empaqueta el pipeline y el agente con todas
 sus dependencias, incluidas las de sistema que LightGBM requiere. Esa misma
 imagen es la que se desplegaría en Azure Functions o en Container Apps.
 
----
 
 ## Futuros ajustes o mejoras
 
@@ -467,7 +465,6 @@ de contrastar un precio puntual a construir un ranking por desviación sistemát
 respecto al mercado, estabilidad de precios y cumplimiento. La herramienta actual
 es el primer paso de ese camino.
 
----
 
 ## Apreciaciones y comentarios del caso
 
@@ -499,7 +496,6 @@ de Y y Z. En un escenario real, conocer los tres insumos permitiría al agente
 cruzar el pronóstico con noticias específicas de cada mercado, que es donde un
 asistente de este tipo aporta más.
 
----
 
 ## Referencias
 

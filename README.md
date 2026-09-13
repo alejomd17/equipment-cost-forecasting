@@ -121,5 +121,7 @@ corre en `make all` es el mismo código que produjo las figuras.
 
 ## Informe
 
-El análisis completo, con supuestos, resultados y limitaciones, está en
-[`reports/informe.md`](reports/informe.md).
+El análisis completo está en [`reports/informe.md`](reports/informe.md), también en
+[PDF](reports/Informe_pronostico_costos_equipos.pdf). La
+[presentación](reports/Presentacion_pronostico_costos_equipos.pptx) resume los
+hallazgos en doce diapositivas.
